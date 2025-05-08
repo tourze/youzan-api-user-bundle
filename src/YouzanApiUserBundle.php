@@ -11,7 +11,6 @@ class YouzanApiUserBundle extends Bundle implements BundleDependencyInterface
     {
         return [
             \YouzanApiBundle\YouzanApiBundle::class => ['all' => true],
-            \AmisBundle\AmisBundle::class => ['all' => true],
         ];
     }
 }
