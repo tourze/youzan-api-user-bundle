@@ -80,7 +80,7 @@ class SyncFollowersCommand extends Command
                 $totalProcessed += $processed;
 
                 $io->success(sprintf('成功同步 %d 个粉丝信息', $processed));
-            } catch  (\Throwable $e) {
+            } catch (\Throwable $e) {
                 $io->error(sprintf('账号 %s 同步失败: %s', $account->getName(), $e->getMessage()));
             }
 
