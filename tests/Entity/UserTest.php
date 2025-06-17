@@ -193,7 +193,7 @@ class UserTest extends TestCase
      */
     public function testTimestampMethods(): void
     {
-        $now = new \DateTime();
+        $now = new \DateTimeImmutable();
 
         // 测试创建时间
         $this->user->setCreateTime($now);
