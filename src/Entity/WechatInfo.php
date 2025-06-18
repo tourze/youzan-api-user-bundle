@@ -5,8 +5,6 @@ namespace YouzanApiUserBundle\Entity;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
-use Tourze\EasyAdmin\Attribute\Column\ExportColumn;
-use Tourze\EasyAdmin\Attribute\Column\ListColumn;
 use YouzanApiUserBundle\Enum\FansStatusEnum;
 use YouzanApiUserBundle\Enum\WechatTypeEnum;
 use YouzanApiUserBundle\Repository\WechatInfoRepository;
@@ -18,8 +16,6 @@ use YouzanApiUserBundle\Repository\WechatInfoRepository;
 #[ORM\Table(name: 'ims_youzan_user_wechat_info', options: ['comment' => '有赞用户微信信息表'])]
 class WechatInfo
 {
-    #[ListColumn(order: -1)]
-    #[ExportColumn]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: Types::INTEGER, options: ['comment' => 'ID'])]

@@ -5,8 +5,6 @@ namespace YouzanApiUserBundle\Entity;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
-use Tourze\EasyAdmin\Attribute\Column\ExportColumn;
-use Tourze\EasyAdmin\Attribute\Column\ListColumn;
 use YouzanApiUserBundle\Repository\StaffRepository;
 
 /**
@@ -16,8 +14,6 @@ use YouzanApiUserBundle\Repository\StaffRepository;
 #[ORM\Table(name: 'ims_youzan_user_staff', options: ['comment' => '有赞员工表'])]
 class Staff
 {
-    #[ListColumn(order: -1)]
-    #[ExportColumn]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: Types::INTEGER, options: ['comment' => 'ID'])]

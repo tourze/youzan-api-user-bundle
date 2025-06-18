@@ -5,8 +5,6 @@ namespace YouzanApiUserBundle\Entity;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
-use Tourze\EasyAdmin\Attribute\Column\ExportColumn;
-use Tourze\EasyAdmin\Attribute\Column\ListColumn;
 use YouzanApiBundle\Entity\Account;
 use YouzanApiUserBundle\Enum\GenderEnum;
 use YouzanApiUserBundle\Repository\FollowerRepository;
@@ -19,8 +17,6 @@ use YouzanApiUserBundle\Repository\FollowerRepository;
 class Follower
 {
     use TimestampableAware;
-    #[ListColumn(order: -1)]
-    #[ExportColumn]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: Types::INTEGER, options: ['comment' => 'ID'])]
