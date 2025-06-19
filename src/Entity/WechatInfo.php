@@ -14,7 +14,7 @@ use YouzanApiUserBundle\Repository\WechatInfoRepository;
  */
 #[ORM\Entity(repositoryClass: WechatInfoRepository::class)]
 #[ORM\Table(name: 'ims_youzan_user_wechat_info', options: ['comment' => '有赞用户微信信息表'])]
-class WechatInfo
+class WechatInfo implements \Stringable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -26,23 +26,23 @@ class WechatInfo
         return $this->id;
     }
 
-    #[ORM\Column(type: 'integer', nullable: true, enumType: WechatTypeEnum::class, options: ['comment' => '微信类型'])]
+    #[ORM\Column(type: Types::INTEGER, nullable: true, enumType: WechatTypeEnum::class, options: ['comment' => '微信类型'])]
     private ?WechatTypeEnum $wechatType = null;
 
-    #[ORM\Column(type: 'integer', enumType: FansStatusEnum::class, options: ['comment' => '粉丝状态'])]
+    #[ORM\Column(type: Types::INTEGER, enumType: FansStatusEnum::class, options: ['comment' => '粉丝状态'])]
     private FansStatusEnum $fansStatus = FansStatusEnum::UNFOLLOWED;
 
-    #[ORM\Column(type: 'datetime', nullable: true, options: ['comment' => '关注时间'])]
-    private ?\DateTime $followTime = null;
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true, options: ['comment' => '关注时间'])]
+    private ?\DateTimeImmutable $followTime = null;
 
-    #[ORM\Column(type: 'datetime', nullable: true, options: ['comment' => '最后交谈时间'])]
-    private ?\DateTime $lastTalkTime = null;
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true, options: ['comment' => '最后交谈时间'])]
+    private ?\DateTimeImmutable $lastTalkTime = null;
 
-    #[ORM\Column(type: 'string', length: 64, nullable: true, options: ['comment' => '微信 UnionID'])]
+    #[ORM\Column(type: Types::STRING, length: 64, nullable: true, options: ['comment' => '微信 UnionID'])]
     private ?string $unionId = null;
 
-    #[ORM\Column(type: 'datetime', nullable: true, options: ['comment' => '取消关注时间'])]
-    private ?\DateTime $unfollowTime = null;
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true, options: ['comment' => '取消关注时间'])]
+    private ?\DateTimeImmutable $unfollowTime = null;
 
     /**
      * 关联的有赞用户
@@ -75,23 +75,23 @@ class WechatInfo
         return $this;
     }
 
-    public function getFollowTime(): ?\DateTime
+    public function getFollowTime(): ?\DateTimeImmutable
     {
         return $this->followTime;
     }
 
-    public function setFollowTime(?\DateTime $followTime): self
+    public function setFollowTime(?\DateTimeImmutable $followTime): self
     {
         $this->followTime = $followTime;
         return $this;
     }
 
-    public function getLastTalkTime(): ?\DateTime
+    public function getLastTalkTime(): ?\DateTimeImmutable
     {
         return $this->lastTalkTime;
     }
 
-    public function setLastTalkTime(?\DateTime $lastTalkTime): self
+    public function setLastTalkTime(?\DateTimeImmutable $lastTalkTime): self
     {
         $this->lastTalkTime = $lastTalkTime;
         return $this;
@@ -108,12 +108,12 @@ class WechatInfo
         return $this;
     }
 
-    public function getUnfollowTime(): ?\DateTime
+    public function getUnfollowTime(): ?\DateTimeImmutable
     {
         return $this->unfollowTime;
     }
 
-    public function setUnfollowTime(?\DateTime $unfollowTime): self
+    public function setUnfollowTime(?\DateTimeImmutable $unfollowTime): self
     {
         $this->unfollowTime = $unfollowTime;
         return $this;
@@ -136,5 +136,12 @@ class WechatInfo
     public function isFans(): bool
     {
         return $this->fansStatus === FansStatusEnum::FOLLOWED;
+    }
+
+    public function __toString(): string
+    {
+        return null !== $this->getId() 
+            ? "{$this->getUser()->getNickNameDecrypted()}[{$this->getUnionId()}]" 
+            : '';
     }
 }

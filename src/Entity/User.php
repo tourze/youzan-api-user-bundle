@@ -14,7 +14,7 @@ use YouzanApiUserBundle\Repository\UserRepository;
  */
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: 'ims_youzan_user', options: ['comment' => '有赞用户表'])]
-class User
+class User implements \Stringable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -26,34 +26,31 @@ class User
         return $this->id;
     }
 
-    /**
-     * 基础信息 primitive_info
-     */
-    #[ORM\Column(type: 'string', length: 64, unique: true, options: ['comment' => '有赞用户ID'])]
+    #[ORM\Column(type: Types::STRING, length: 64, unique: true, options: ['comment' => '有赞用户ID'])]
     private string $yzOpenId;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true, options: ['comment' => '昵称（加密）'])]
+    #[ORM\Column(type: Types::STRING, length: 255, nullable: true, options: ['comment' => '昵称（加密）'])]
     private ?string $nickNameEncrypted = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true, options: ['comment' => '昵称（明文）'])]
+    #[ORM\Column(type: Types::STRING, length: 255, nullable: true, options: ['comment' => '昵称（明文）'])]
     private ?string $nickNameDecrypted = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true, options: ['comment' => '头像'])]
+    #[ORM\Column(type: Types::STRING, length: 255, nullable: true, options: ['comment' => '头像'])]
     private ?string $avatar = null;
 
-    #[ORM\Column(type: 'string', length: 32, nullable: true, options: ['comment' => '国家'])]
+    #[ORM\Column(type: Types::STRING, length: 32, nullable: true, options: ['comment' => '国家'])]
     private ?string $country = null;
 
-    #[ORM\Column(type: 'string', length: 32, nullable: true, options: ['comment' => '省份'])]
+    #[ORM\Column(type: Types::STRING, length: 32, nullable: true, options: ['comment' => '省份'])]
     private ?string $province = null;
 
-    #[ORM\Column(type: 'string', length: 32, nullable: true, options: ['comment' => '城市'])]
+    #[ORM\Column(type: Types::STRING, length: 32, nullable: true, options: ['comment' => '城市'])]
     private ?string $city = null;
 
-    #[ORM\Column(type: 'integer', enumType: GenderEnum::class, options: ['comment' => '性别'])]
+    #[ORM\Column(type: Types::INTEGER, enumType: GenderEnum::class, options: ['comment' => '性别'])]
     private GenderEnum $gender = GenderEnum::UNKNOWN;
 
-    #[ORM\Column(type: 'smallint', options: ['comment' => '平台类型'])]
+    #[ORM\Column(type: Types::SMALLINT, options: ['comment' => '平台类型'])]
     private int $platformType = 0;
 
     /**
@@ -236,5 +233,12 @@ class User
     {
         $this->account = $account;
         return $this;
+    }
+
+    public function __toString(): string
+    {
+        return null !== $this->getId() 
+            ? "{$this->getNickNameDecrypted()}[{$this->getYzOpenId()}]" 
+            : '';
     }
 }

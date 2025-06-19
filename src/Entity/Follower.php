@@ -13,8 +13,8 @@ use YouzanApiUserBundle\Repository\FollowerRepository;
  * 有赞粉丝实体
  */
 #[ORM\Entity(repositoryClass: FollowerRepository::class)]
-#[ORM\Table(name: 'ims_youzan_user_follower', options: ['comment' => '有赞粉丝表'])]
-class Follower
+#[ORM\Table(name: 'ims_youzan_user_follower', options: ['comment' => '有赞籉丝表'])]
+class Follower implements \Stringable
 {
     use TimestampableAware;
     #[ORM\Id]
@@ -22,43 +22,43 @@ class Follower
     #[ORM\Column(type: Types::INTEGER, options: ['comment' => 'ID'])]
     private ?int $id = 0;
 
-    #[ORM\Column(type: 'bigint', unique: true, options: ['comment' => '有赞用户ID'])]
+    #[ORM\Column(type: Types::BIGINT, unique: true, options: ['comment' => '有赞用户ID'])]
     private int $userId;
 
-    #[ORM\Column(type: 'string', length: 64, unique: true, options: ['comment' => '微信 OpenID'])]
+    #[ORM\Column(type: Types::STRING, length: 64, unique: true, options: ['comment' => '微信 OpenID'])]
     private string $weixinOpenId;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true, options: ['comment' => '昵称'])]
+    #[ORM\Column(type: Types::STRING, length: 255, nullable: true, options: ['comment' => '昵称'])]
     private ?string $nick = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true, options: ['comment' => '头像'])]
+    #[ORM\Column(type: Types::STRING, length: 255, nullable: true, options: ['comment' => '头像'])]
     private ?string $avatar = null;
 
-    #[ORM\Column(type: 'string', length: 32, nullable: true, options: ['comment' => '国家'])]
+    #[ORM\Column(type: Types::STRING, length: 32, nullable: true, options: ['comment' => '国家'])]
     private ?string $country = null;
 
-    #[ORM\Column(type: 'string', length: 32, nullable: true, options: ['comment' => '省份'])]
+    #[ORM\Column(type: Types::STRING, length: 32, nullable: true, options: ['comment' => '省份'])]
     private ?string $province = null;
 
-    #[ORM\Column(type: 'string', length: 32, nullable: true, options: ['comment' => '城市'])]
+    #[ORM\Column(type: Types::STRING, length: 32, nullable: true, options: ['comment' => '城市'])]
     private ?string $city = null;
 
-    #[ORM\Column(type: 'integer', enumType: GenderEnum::class, options: ['comment' => '性别'])]
+    #[ORM\Column(type: Types::INTEGER, enumType: GenderEnum::class, options: ['comment' => '性别'])]
     private GenderEnum $sex = GenderEnum::UNKNOWN;
 
-    #[ORM\Column(type: 'boolean', options: ['comment' => '是否关注'])]
+    #[ORM\Column(type: Types::BOOLEAN, options: ['comment' => '是否关注'])]
     private bool $isFollow = false;
 
-    #[ORM\Column(type: 'integer', nullable: true, options: ['comment' => '关注时间'])]
+    #[ORM\Column(type: Types::INTEGER, nullable: true, options: ['comment' => '关注时间'])]
     private ?int $followTime = null;
 
-    #[ORM\Column(type: 'integer', nullable: true, options: ['comment' => '交易笔数'])]
+    #[ORM\Column(type: Types::INTEGER, nullable: true, options: ['comment' => '交易笔数'])]
     private ?int $tradedNum = null;
 
-    #[ORM\Column(type: 'decimal', precision: 10, scale: 2, nullable: true, options: ['comment' => '交易金额'])]
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, nullable: true, options: ['comment' => '交易金额'])]
     private ?float $tradeMoney = null;
 
-    #[ORM\Column(type: 'json', nullable: true, options: ['comment' => '积分信息'])]
+    #[ORM\Column(type: Types::JSON, nullable: true, options: ['comment' => '积分信息'])]
     private ?array $points = null;
 
     /**
@@ -243,4 +243,12 @@ class Follower
     {
         $this->levelInfo = $levelInfo;
         return $this;
-    }}
+    }
+
+    public function __toString(): string
+    {
+        return null !== $this->getId() 
+            ? "{$this->getNick()}[{$this->getWeixinOpenId()}]" 
+            : '';
+    }
+}

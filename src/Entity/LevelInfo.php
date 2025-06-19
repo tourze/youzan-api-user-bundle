@@ -12,7 +12,7 @@ use YouzanApiUserBundle\Repository\LevelInfoRepository;
  */
 #[ORM\Entity(repositoryClass: LevelInfoRepository::class)]
 #[ORM\Table(name: 'ims_youzan_user_level_info', options: ['comment' => '有赞用户等级信息表'])]
-class LevelInfo
+class LevelInfo implements \Stringable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -24,10 +24,10 @@ class LevelInfo
         return $this->id;
     }
 
-    #[ORM\Column(type: 'bigint', nullable: true, options: ['comment' => '会员等级ID'])]
+    #[ORM\Column(type: Types::BIGINT, nullable: true, options: ['comment' => '会员等级ID'])]
     private ?int $levelId = null;
 
-    #[ORM\Column(type: 'string', length: 64, nullable: true, options: ['comment' => '会员等级名称'])]
+    #[ORM\Column(type: Types::STRING, length: 64, nullable: true, options: ['comment' => '会员等级名称'])]
     private ?string $levelName = null;
 
     use TimestampableAware;
@@ -52,5 +52,12 @@ class LevelInfo
     {
         $this->levelName = $levelName;
         return $this;
+    }
+
+    public function __toString(): string
+    {
+        return null !== $this->getId() 
+            ? "{$this->getLevelName()}[{$this->getLevelId()}]" 
+            : '';
     }
 }

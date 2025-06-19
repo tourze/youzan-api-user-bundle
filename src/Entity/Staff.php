@@ -12,7 +12,7 @@ use YouzanApiUserBundle\Repository\StaffRepository;
  */
 #[ORM\Entity(repositoryClass: StaffRepository::class)]
 #[ORM\Table(name: 'ims_youzan_user_staff', options: ['comment' => '有赞员工表'])]
-class Staff
+class Staff implements \Stringable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -24,19 +24,19 @@ class Staff
         return $this->id;
     }
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true, options: ['comment' => '企业名称'])]
+    #[ORM\Column(type: Types::STRING, length: 255, nullable: true, options: ['comment' => '企业名称'])]
     private ?string $corpName = null;
 
-    #[ORM\Column(type: 'bigint', nullable: true, options: ['comment' => '微商城店铺ID'])]
+    #[ORM\Column(type: Types::BIGINT, nullable: true, options: ['comment' => '微商城店铺ID'])]
     private ?int $kdtId = null;
 
-    #[ORM\Column(type: 'string', length: 64, nullable: true, options: ['comment' => '企业ID'])]
+    #[ORM\Column(type: Types::STRING, length: 64, nullable: true, options: ['comment' => '企业ID'])]
     private ?string $corpId = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true, options: ['comment' => '员工邮箱'])]
+    #[ORM\Column(type: Types::STRING, length: 255, nullable: true, options: ['comment' => '员工邮箱'])]
     private ?string $email = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true, options: ['comment' => '员工名称'])]
+    #[ORM\Column(type: Types::STRING, length: 255, nullable: true, options: ['comment' => '员工名称'])]
     private ?string $name = null;
 
     /**
@@ -112,5 +112,12 @@ class Staff
     {
         $this->user = $user;
         return $this;
+    }
+
+    public function __toString(): string
+    {
+        return null !== $this->getId() 
+            ? "{$this->getName()}[{$this->getEmail()}]" 
+            : '';
     }
 }

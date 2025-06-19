@@ -12,7 +12,7 @@ use YouzanApiUserBundle\Repository\MobileInfoRepository;
  */
 #[ORM\Entity(repositoryClass: MobileInfoRepository::class)]
 #[ORM\Table(name: 'ims_youzan_user_mobile_info', options: ['comment' => '有赞用户手机信息表'])]
-class MobileInfo
+class MobileInfo implements \Stringable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -24,13 +24,13 @@ class MobileInfo
         return $this->id;
     }
 
-    #[ORM\Column(type: 'string', length: 32, nullable: true, options: ['comment' => '国家代码'])]
+    #[ORM\Column(type: Types::STRING, length: 32, nullable: true, options: ['comment' => '国家代码'])]
     private ?string $countryCode = null;
 
-    #[ORM\Column(type: 'string', length: 32, nullable: true, options: ['comment' => '手机号（加密）'])]
+    #[ORM\Column(type: Types::STRING, length: 32, nullable: true, options: ['comment' => '手机号（加密）'])]
     private ?string $mobileEncrypted = null;
 
-    #[ORM\Column(type: 'string', length: 32, nullable: true, options: ['comment' => '手机号（明文）'])]
+    #[ORM\Column(type: Types::STRING, length: 32, nullable: true, options: ['comment' => '手机号（明文）'])]
     private ?string $mobileDecrypted = null;
 
     /**
@@ -84,5 +84,12 @@ class MobileInfo
     {
         $this->user = $user;
         return $this;
+    }
+
+    public function __toString(): string
+    {
+        return null !== $this->getId() 
+            ? "{$this->getCountryCode()}-{$this->getMobileDecrypted()}" 
+            : '';
     }
 }

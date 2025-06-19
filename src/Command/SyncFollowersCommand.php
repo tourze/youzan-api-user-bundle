@@ -18,11 +18,13 @@ use YouzanApiUserBundle\Enum\GenderEnum;
 use YouzanApiUserBundle\Repository\FollowerRepository;
 
 #[AsCommand(
-    name: 'youzan:sync:followers',
+    name: self::NAME,
     description: '同步有赞微信粉丝信息',
 )]
 class SyncFollowersCommand extends Command
 {
+    public const NAME = 'youzan:sync:followers';
+    
     private const BATCH_SIZE = 100;
     private const PAGE_SIZE = 50;
 
@@ -48,7 +50,8 @@ class SyncFollowersCommand extends Command
 
         // 获取账号列表
         $accounts = [];
-        if ($accountId = $input->getOption('account')) {
+        $accountId = $input->getOption('account');
+        if (null !== $accountId) {
             $account = $this->accountRepository->find($accountId);
             if (!$account instanceof Account) {
                 $io->error('账号不存在');
@@ -160,7 +163,7 @@ class SyncFollowersCommand extends Command
                 // 批量提交
                 if ($batchCount >= self::BATCH_SIZE) {
                     $this->entityManager->flush();
-                    $this->entityManager->clear(Follower::class);
+                    $this->entityManager->clear();
                     $batchCount = 0;
                 }
             }
