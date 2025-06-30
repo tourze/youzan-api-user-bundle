@@ -142,38 +142,6 @@ class UserTest extends TestCase
         $this->assertSame($value, $this->user->getPlatformType());
     }
 
-    /**
-     * 测试关联的员工信息
-     *
-     * @doesNotPerformAssertions 由于实体关联的复杂性，此测试标记为不执行断言
-     */
-    public function testStaffAssociation(): void
-    {
-        // 跳过此测试，因为实体关联的初始化问题难以在单元测试中解决
-        $this->markTestSkipped('由于实体关联的复杂性，跳过此测试');
-    }
-
-    /**
-     * 测试关联的微信信息
-     *
-     * @doesNotPerformAssertions 由于实体关联的复杂性，此测试标记为不执行断言
-     */
-    public function testWechatInfoAssociation(): void
-    {
-        // 跳过此测试，因为实体关联的初始化问题难以在单元测试中解决
-        $this->markTestSkipped('由于实体关联的复杂性，跳过此测试');
-    }
-
-    /**
-     * 测试关联的手机信息
-     *
-     * @doesNotPerformAssertions 由于实体关联的复杂性，此测试标记为不执行断言
-     */
-    public function testMobileInfoAssociation(): void
-    {
-        // 跳过此测试，因为实体关联的初始化问题难以在单元测试中解决
-        $this->markTestSkipped('由于实体关联的复杂性，跳过此测试');
-    }
 
     /**
      * 测试关联的账号

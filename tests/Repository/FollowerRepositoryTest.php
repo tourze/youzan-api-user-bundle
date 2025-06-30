@@ -6,12 +6,12 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Persistence\ManagerRegistry;
 use PHPUnit\Framework\TestCase;
-use YouzanApiUserBundle\Entity\User;
-use YouzanApiUserBundle\Repository\UserRepository;
+use YouzanApiUserBundle\Entity\Follower;
+use YouzanApiUserBundle\Repository\FollowerRepository;
 
-class UserRepositoryTest extends TestCase
+class FollowerRepositoryTest extends TestCase
 {
-    private UserRepository $repository;
+    private FollowerRepository $repository;
     private EntityManagerInterface $entityManager;
     private ManagerRegistry $registry;
 
@@ -21,7 +21,7 @@ class UserRepositoryTest extends TestCase
         $this->registry = $this->createMock(ManagerRegistry::class);
 
         $classMetadata = $this->createMock(ClassMetadata::class);
-        $classMetadata->name = User::class;
+        $classMetadata->name = Follower::class;
 
         $this->registry->expects($this->any())
             ->method('getManagerForClass')
@@ -31,16 +31,16 @@ class UserRepositoryTest extends TestCase
             ->method('getClassMetadata')
             ->willReturn($classMetadata);
 
-        $this->repository = new UserRepository($this->registry);
+        $this->repository = new FollowerRepository($this->registry);
     }
 
     public function testCanBeInstantiated(): void
     {
-        $this->assertInstanceOf(UserRepository::class, $this->repository);
+        $this->assertInstanceOf(FollowerRepository::class, $this->repository);
     }
 
     public function testGetEntityClass(): void
     {
-        $this->assertSame(User::class, $this->repository->getClassName());
+        $this->assertSame(Follower::class, $this->repository->getClassName());
     }
 }

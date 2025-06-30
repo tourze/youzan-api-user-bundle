@@ -16,6 +16,7 @@ use YouzanApiBundle\Service\YouzanClientService;
 use YouzanApiUserBundle\Entity\Follower;
 use YouzanApiUserBundle\Enum\GenderEnum;
 use YouzanApiUserBundle\Repository\FollowerRepository;
+use YouzanApiUserBundle\Exception\YouzanApiException;
 
 #[AsCommand(
     name: self::NAME,
@@ -118,7 +119,7 @@ class SyncFollowersCommand extends Command
         ]);
 
         if (!$response['success']) {
-            throw new \RuntimeException($response['message'] ?? '接口调用失败');
+            throw new YouzanApiException($response['message'] ?? '接口调用失败');
         }
 
         $total = $response['data']['total_results'];
