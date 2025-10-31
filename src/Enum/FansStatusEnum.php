@@ -2,6 +2,7 @@
 
 namespace YouzanApiUserBundle\Enum;
 
+use Tourze\EnumExtra\BadgeInterface;
 use Tourze\EnumExtra\Itemable;
 use Tourze\EnumExtra\ItemTrait;
 use Tourze\EnumExtra\Labelable;
@@ -11,21 +12,29 @@ use Tourze\EnumExtra\SelectTrait;
 /**
  * 粉丝状态枚举
  */
-enum FansStatusEnum: int implements Labelable, Itemable, Selectable
+enum FansStatusEnum: int implements Labelable, Itemable, Selectable, BadgeInterface
 {
-    use ItemTrait;
     use SelectTrait;
-
+    use ItemTrait;
     case UNFOLLOWED = 0;
     case FOLLOWED = 1;
     case SILENT_AUTH = 2;
 
     public function getLabel(): string
     {
-        return match($this) {
+        return match ($this) {
             self::UNFOLLOWED => '已取关',
             self::FOLLOWED => '已关注',
             self::SILENT_AUTH => '静默授权',
+        };
+    }
+
+    public function getBadge(): string
+    {
+        return match ($this) {
+            self::UNFOLLOWED => self::DANGER,
+            self::FOLLOWED => self::SUCCESS,
+            self::SILENT_AUTH => self::INFO,
         };
     }
 
@@ -34,7 +43,7 @@ enum FansStatusEnum: int implements Labelable, Itemable, Selectable
      */
     public static function fromInt(int $value): ?self
     {
-        return match($value) {
+        return match ($value) {
             0 => self::UNFOLLOWED,
             1 => self::FOLLOWED,
             2 => self::SILENT_AUTH,
@@ -47,6 +56,6 @@ enum FansStatusEnum: int implements Labelable, Itemable, Selectable
      */
     public function isFans(): bool
     {
-        return $this === self::FOLLOWED;
+        return self::FOLLOWED === $this;
     }
 }

@@ -2,35 +2,42 @@
 
 namespace YouzanApiUserBundle\Tests\Enum;
 
-use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\TestWith;
+use Tourze\PHPUnitEnum\AbstractEnumTestCase;
 use YouzanApiUserBundle\Enum\GenderEnum;
 
-class GenderEnumTest extends TestCase
+/**
+ * @internal
+ */
+#[CoversClass(GenderEnum::class)]
+final class GenderEnumTest extends AbstractEnumTestCase
 {
-    /**
-     * 测试枚举的基本值
-     */
-    public function testEnumValues(): void
+    #[TestWith([GenderEnum::UNKNOWN, 0, '未知'])]
+    #[TestWith([GenderEnum::MALE, 1, '男'])]
+    #[TestWith([GenderEnum::FEMALE, 2, '女'])]
+    public function testValueAndLabel(GenderEnum $enum, int $expectedValue, string $expectedLabel): void
     {
-        $this->assertSame(0, GenderEnum::UNKNOWN->value);
-        $this->assertSame(1, GenderEnum::MALE->value);
-        $this->assertSame(2, GenderEnum::FEMALE->value);
+        $this->assertSame($expectedValue, $enum->value);
+        $this->assertSame($expectedLabel, $enum->getLabel());
     }
 
-    /**
-     * 测试 getLabel 方法返回正确的标签
-     */
-    public function testGetLabel_returnsCorrectLabels(): void
+    public function testValueUniqueness(): void
     {
-        $this->assertSame('未知', GenderEnum::UNKNOWN->getLabel());
-        $this->assertSame('男', GenderEnum::MALE->getLabel());
-        $this->assertSame('女', GenderEnum::FEMALE->getLabel());
+        $values = array_map(fn (GenderEnum $enum) => $enum->value, GenderEnum::cases());
+        $this->assertSame($values, array_unique($values));
+    }
+
+    public function testLabelUniqueness(): void
+    {
+        $labels = array_map(fn (GenderEnum $enum) => $enum->getLabel(), GenderEnum::cases());
+        $this->assertSame($labels, array_unique($labels));
     }
 
     /**
      * 测试 fromInt 方法能正确将整数转换为枚举实例
      */
-    public function testFromInt_convertsValidIntegers(): void
+    public function testFromIntConvertsValidIntegers(): void
     {
         $this->assertSame(GenderEnum::UNKNOWN, GenderEnum::fromInt(0));
         $this->assertSame(GenderEnum::MALE, GenderEnum::fromInt(1));
@@ -40,9 +47,35 @@ class GenderEnumTest extends TestCase
     /**
      * 测试 fromInt 方法处理无效整数
      */
-    public function testFromInt_handlesInvalidIntegers(): void
+    public function testFromIntHandlesInvalidIntegers(): void
     {
         $this->assertSame(GenderEnum::UNKNOWN, GenderEnum::fromInt(-1));
         $this->assertSame(GenderEnum::UNKNOWN, GenderEnum::fromInt(99));
+    }
+
+    public function testFromWithValidValue(): void
+    {
+        $this->assertSame(GenderEnum::UNKNOWN, GenderEnum::from(0));
+        $this->assertSame(GenderEnum::MALE, GenderEnum::from(1));
+        $this->assertSame(GenderEnum::FEMALE, GenderEnum::from(2));
+    }
+
+    public function testTryFromWithValidValue(): void
+    {
+        $this->assertSame(GenderEnum::UNKNOWN, GenderEnum::tryFrom(0));
+        $this->assertSame(GenderEnum::MALE, GenderEnum::tryFrom(1));
+        $this->assertSame(GenderEnum::FEMALE, GenderEnum::tryFrom(2));
+    }
+
+    /**
+     * 测试 toArray 方法
+     */
+    public function testToArray(): void
+    {
+        $expected = [
+            'value' => 0,
+            'label' => '未知',
+        ];
+        $this->assertSame($expected, GenderEnum::UNKNOWN->toArray());
     }
 }

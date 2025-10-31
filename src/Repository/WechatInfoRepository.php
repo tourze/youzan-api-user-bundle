@@ -4,17 +4,15 @@ namespace YouzanApiUserBundle\Repository;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Tourze\PHPUnitSymfonyKernelTest\Attribute\AsRepository;
 use YouzanApiUserBundle\Entity\WechatInfo;
 use YouzanApiUserBundle\Enum\FansStatusEnum;
 
 /**
  * 有赞用户微信信息仓库类
- *
- * @method WechatInfo|null find($id, $lockMode = null, $lockVersion = null)
- * @method WechatInfo|null findOneBy(array $criteria, array $orderBy = null)
- * @method WechatInfo[] findAll()
- * @method WechatInfo[] findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @extends ServiceEntityRepository<WechatInfo>
  */
+#[AsRepository(entityClass: WechatInfo::class)]
 class WechatInfoRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
@@ -24,6 +22,7 @@ class WechatInfoRepository extends ServiceEntityRepository
 
     /**
      * 根据微信 UnionID 查询微信信息
+     * @return WechatInfo|null
      */
     public function findByUnionId(string $unionId): ?WechatInfo
     {
@@ -32,9 +31,28 @@ class WechatInfoRepository extends ServiceEntityRepository
 
     /**
      * 查询所有粉丝
+     * @return array<WechatInfo>
      */
     public function findAllFans(): array
     {
         return $this->findBy(['fansStatus' => FansStatusEnum::FOLLOWED]);
+    }
+
+    public function save(WechatInfo $entity, bool $flush = true): void
+    {
+        $this->getEntityManager()->persist($entity);
+
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
+    }
+
+    public function remove(WechatInfo $entity, bool $flush = true): void
+    {
+        $this->getEntityManager()->remove($entity);
+
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
     }
 }

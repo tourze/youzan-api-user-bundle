@@ -2,35 +2,42 @@
 
 namespace YouzanApiUserBundle\Tests\Enum;
 
-use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\TestWith;
+use Tourze\PHPUnitEnum\AbstractEnumTestCase;
 use YouzanApiUserBundle\Enum\FansStatusEnum;
 
-class FansStatusEnumTest extends TestCase
+/**
+ * @internal
+ */
+#[CoversClass(FansStatusEnum::class)]
+final class FansStatusEnumTest extends AbstractEnumTestCase
 {
-    /**
-     * 测试枚举的基本值
-     */
-    public function testEnumValues(): void
+    #[TestWith([FansStatusEnum::UNFOLLOWED, 0, '已取关'])]
+    #[TestWith([FansStatusEnum::FOLLOWED, 1, '已关注'])]
+    #[TestWith([FansStatusEnum::SILENT_AUTH, 2, '静默授权'])]
+    public function testValueAndLabel(FansStatusEnum $enum, int $expectedValue, string $expectedLabel): void
     {
-        $this->assertSame(0, FansStatusEnum::UNFOLLOWED->value);
-        $this->assertSame(1, FansStatusEnum::FOLLOWED->value);
-        $this->assertSame(2, FansStatusEnum::SILENT_AUTH->value);
+        $this->assertSame($expectedValue, $enum->value);
+        $this->assertSame($expectedLabel, $enum->getLabel());
     }
 
-    /**
-     * 测试 getLabel 方法返回正确的标签
-     */
-    public function testGetLabel_returnsCorrectLabels(): void
+    public function testValueUniqueness(): void
     {
-        $this->assertSame('已取关', FansStatusEnum::UNFOLLOWED->getLabel());
-        $this->assertSame('已关注', FansStatusEnum::FOLLOWED->getLabel());
-        $this->assertSame('静默授权', FansStatusEnum::SILENT_AUTH->getLabel());
+        $values = array_map(fn (FansStatusEnum $enum) => $enum->value, FansStatusEnum::cases());
+        $this->assertSame($values, array_unique($values));
+    }
+
+    public function testLabelUniqueness(): void
+    {
+        $labels = array_map(fn (FansStatusEnum $enum) => $enum->getLabel(), FansStatusEnum::cases());
+        $this->assertSame($labels, array_unique($labels));
     }
 
     /**
      * 测试 fromInt 方法能正确将整数转换为枚举实例
      */
-    public function testFromInt_convertsValidIntegers(): void
+    public function testFromIntConvertsValidIntegers(): void
     {
         $this->assertSame(FansStatusEnum::UNFOLLOWED, FansStatusEnum::fromInt(0));
         $this->assertSame(FansStatusEnum::FOLLOWED, FansStatusEnum::fromInt(1));
@@ -40,19 +47,45 @@ class FansStatusEnumTest extends TestCase
     /**
      * 测试 fromInt 方法处理无效整数
      */
-    public function testFromInt_handlesInvalidIntegers(): void
+    public function testFromIntHandlesInvalidIntegers(): void
     {
         $this->assertNull(FansStatusEnum::fromInt(-1));
         $this->assertNull(FansStatusEnum::fromInt(99));
     }
 
+    public function testFromWithValidValue(): void
+    {
+        $this->assertSame(FansStatusEnum::UNFOLLOWED, FansStatusEnum::from(0));
+        $this->assertSame(FansStatusEnum::FOLLOWED, FansStatusEnum::from(1));
+        $this->assertSame(FansStatusEnum::SILENT_AUTH, FansStatusEnum::from(2));
+    }
+
+    public function testTryFromWithValidValue(): void
+    {
+        $this->assertSame(FansStatusEnum::UNFOLLOWED, FansStatusEnum::tryFrom(0));
+        $this->assertSame(FansStatusEnum::FOLLOWED, FansStatusEnum::tryFrom(1));
+        $this->assertSame(FansStatusEnum::SILENT_AUTH, FansStatusEnum::tryFrom(2));
+    }
+
     /**
      * 测试 isFans 方法
      */
-    public function testIsFans_identifiesFollowers(): void
+    public function testIsFansIdentifiesFollowers(): void
     {
         $this->assertFalse(FansStatusEnum::UNFOLLOWED->isFans());
         $this->assertTrue(FansStatusEnum::FOLLOWED->isFans());
         $this->assertFalse(FansStatusEnum::SILENT_AUTH->isFans());
+    }
+
+    /**
+     * 测试 toArray 方法
+     */
+    public function testToArray(): void
+    {
+        $expected = [
+            'value' => 0,
+            'label' => '已取关',
+        ];
+        $this->assertSame($expected, FansStatusEnum::UNFOLLOWED->toArray());
     }
 }

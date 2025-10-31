@@ -2,47 +2,45 @@
 
 namespace YouzanApiUserBundle\Tests\Entity;
 
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
+use Tourze\PHPUnitDoctrineEntity\AbstractEntityTestCase;
 use YouzanApiUserBundle\Entity\LevelInfo;
-use YouzanApiUserBundle\Entity\User;
 
-class LevelInfoTest extends TestCase
+/**
+ * @internal
+ */
+#[CoversClass(LevelInfo::class)]
+final class LevelInfoTest extends AbstractEntityTestCase
 {
-    private LevelInfo $levelInfo;
-
-    protected function setUp(): void
+    protected function createEntity(): object
     {
-        $this->levelInfo = new LevelInfo();
+        return new LevelInfo();
     }
 
-    public function testGettersAndSetters(): void
+    /**
+     * @return iterable<string, array{string, mixed}>
+     */
+    public static function propertiesProvider(): iterable
     {
-        // Test levelId
-        $levelId = 12345;
-        $this->levelInfo->setLevelId($levelId);
-        $this->assertEquals($levelId, $this->levelInfo->getLevelId());
-
-        // Test null levelId
-        $this->levelInfo->setLevelId(null);
-        $this->assertNull($this->levelInfo->getLevelId());
-
-        // Test levelName
-        $levelName = 'VIP会员';
-        $this->levelInfo->setLevelName($levelName);
-        $this->assertEquals($levelName, $this->levelInfo->getLevelName());
-
-        // Test null levelName
-        $this->levelInfo->setLevelName(null);
-        $this->assertNull($this->levelInfo->getLevelName());
+        return [
+            'levelId' => ['levelId', 12345],
+            'levelId-null' => ['levelId', null],
+            'levelName' => ['levelName', 'VIP会员'],
+            'levelName-null' => ['levelName', null],
+        ];
     }
 
     public function testToString(): void
     {
-        // 当 ID 为 0 时（默认值），应该返回 '[]'
-        $this->assertEquals('[]', (string)$this->levelInfo);
+        $levelInfo = new LevelInfo();
 
-        $this->levelInfo->setLevelId(123);
-        $this->levelInfo->setLevelName('黄金会员');
-        $this->assertEquals('黄金会员[123]', (string)$this->levelInfo);
+        // 当 ID 为 0 时（默认值），应该返回 '[]'
+        $this->assertEquals('[]', (string) $levelInfo);
+
+        $levelInfo->setLevelId(123);
+        $levelInfo->setLevelName('黄金会员');
+        $this->assertEquals('黄金会员[123]', (string) $levelInfo);
     }
 }

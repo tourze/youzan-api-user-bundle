@@ -4,17 +4,14 @@ namespace YouzanApiUserBundle\Repository;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Tourze\PHPUnitSymfonyKernelTest\Attribute\AsRepository;
 use YouzanApiUserBundle\Entity\Follower;
-use YouzanApiUserBundle\Enum\FansStatusEnum;
 
 /**
  * 有赞粉丝仓库类
- *
- * @method Follower|null find($id, $lockMode = null, $lockVersion = null)
- * @method Follower|null findOneBy(array $criteria, array $orderBy = null)
- * @method Follower[] findAll()
- * @method Follower[] findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @extends ServiceEntityRepository<Follower>
  */
+#[AsRepository(entityClass: Follower::class)]
 class FollowerRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
@@ -40,21 +37,43 @@ class FollowerRepository extends ServiceEntityRepository
 
     /**
      * 查询所有关注的粉丝
+     * @return array<Follower>
      */
     public function findAllFollowed(): array
     {
-        return $this->findBy(['fansStatus' => FansStatusEnum::FOLLOWED]);
+        return $this->findBy(['isFollow' => true]);
     }
 
     /**
      * 根据昵称模糊查询粉丝
+     * @return array<Follower>
      */
     public function findByNickLike(string $nick): array
     {
         $qb = $this->createQueryBuilder('f');
+
         return $qb->where($qb->expr()->like('f.nick', ':nick'))
             ->setParameter('nick', '%' . $nick . '%')
             ->getQuery()
-            ->getResult();
+            ->getResult()
+        ;
+    }
+
+    public function save(Follower $entity, bool $flush = true): void
+    {
+        $this->getEntityManager()->persist($entity);
+
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
+    }
+
+    public function remove(Follower $entity, bool $flush = true): void
+    {
+        $this->getEntityManager()->remove($entity);
+
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
     }
 }

@@ -4,6 +4,7 @@ namespace YouzanApiUserBundle\Entity;
 
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 use YouzanApiUserBundle\Repository\MobileInfoRepository;
 
@@ -14,43 +15,47 @@ use YouzanApiUserBundle\Repository\MobileInfoRepository;
 #[ORM\Table(name: 'ims_youzan_user_mobile_info', options: ['comment' => '有赞用户手机信息表'])]
 class MobileInfo implements \Stringable
 {
+    use TimestampableAware;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: Types::INTEGER, options: ['comment' => 'ID'])]
-    private ?int $id = 0;
+    private int $id = 0;
 
-    public function getId(): ?int
+    public function getId(): int
     {
         return $this->id;
     }
 
     #[ORM\Column(type: Types::STRING, length: 32, nullable: true, options: ['comment' => '国家代码'])]
+    #[Assert\Length(max: 32)]
     private ?string $countryCode = null;
 
     #[ORM\Column(type: Types::STRING, length: 32, nullable: true, options: ['comment' => '手机号（加密）'])]
+    #[Assert\Length(max: 32)]
+    #[Assert\Regex(pattern: '/^[a-zA-Z0-9+\/=]*$/', message: 'Encrypted data should contain only base64 characters')]
     private ?string $mobileEncrypted = null;
 
     #[ORM\Column(type: Types::STRING, length: 32, nullable: true, options: ['comment' => '手机号（明文）'])]
+    #[Assert\Length(max: 32)]
+    #[Assert\Regex(pattern: '/^1[3-9]\d{9}$/', message: 'Mobile phone number must be a valid Chinese mobile number')]
     private ?string $mobileDecrypted = null;
 
     /**
-     * 关联的有赞用户
+     * 关联的有赞用户（单向关联）
      */
-    #[ORM\OneToOne(targetEntity: User::class, inversedBy: 'mobileInfo')]
+    #[ORM\OneToOne(targetEntity: User::class, cascade: ['persist'])]
     #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false)]
     private User $user;
-
-    use TimestampableAware;
 
     public function getCountryCode(): ?string
     {
         return $this->countryCode;
     }
 
-    public function setCountryCode(?string $countryCode): self
+    public function setCountryCode(?string $countryCode): void
     {
         $this->countryCode = $countryCode;
-        return $this;
     }
 
     public function getMobileEncrypted(): ?string
@@ -58,10 +63,9 @@ class MobileInfo implements \Stringable
         return $this->mobileEncrypted;
     }
 
-    public function setMobileEncrypted(?string $mobileEncrypted): self
+    public function setMobileEncrypted(?string $mobileEncrypted): void
     {
         $this->mobileEncrypted = $mobileEncrypted;
-        return $this;
     }
 
     public function getMobileDecrypted(): ?string
@@ -69,10 +73,9 @@ class MobileInfo implements \Stringable
         return $this->mobileDecrypted;
     }
 
-    public function setMobileDecrypted(?string $mobileDecrypted): self
+    public function setMobileDecrypted(?string $mobileDecrypted): void
     {
         $this->mobileDecrypted = $mobileDecrypted;
-        return $this;
     }
 
     public function getUser(): User
@@ -80,16 +83,15 @@ class MobileInfo implements \Stringable
         return $this->user;
     }
 
-    public function setUser(User $user): self
+    public function setUser(User $user): void
     {
         $this->user = $user;
-        return $this;
     }
 
     public function __toString(): string
     {
-        return null !== $this->getId() 
-            ? "{$this->getCountryCode()}-{$this->getMobileDecrypted()}" 
-            : '';
+        return null !== $this->getCountryCode() && null !== $this->getMobileDecrypted()
+            ? "{$this->getCountryCode()}-{$this->getMobileDecrypted()}"
+            : '-';
     }
 }

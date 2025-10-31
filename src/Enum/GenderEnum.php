@@ -2,6 +2,7 @@
 
 namespace YouzanApiUserBundle\Enum;
 
+use Tourze\EnumExtra\BadgeInterface;
 use Tourze\EnumExtra\Itemable;
 use Tourze\EnumExtra\ItemTrait;
 use Tourze\EnumExtra\Labelable;
@@ -11,18 +12,17 @@ use Tourze\EnumExtra\SelectTrait;
 /**
  * 性别枚举
  */
-enum GenderEnum: int implements Labelable, Itemable, Selectable
+enum GenderEnum: int implements Labelable, Itemable, Selectable, BadgeInterface
 {
-    use ItemTrait;
     use SelectTrait;
-
+    use ItemTrait;
     case UNKNOWN = 0;
     case MALE = 1;
     case FEMALE = 2;
 
     public function getLabel(): string
     {
-        return match($this) {
+        return match ($this) {
             self::UNKNOWN => '未知',
             self::MALE => '男',
             self::FEMALE => '女',
@@ -34,11 +34,20 @@ enum GenderEnum: int implements Labelable, Itemable, Selectable
      */
     public static function fromInt(int $value): self
     {
-        return match($value) {
+        return match ($value) {
             0 => self::UNKNOWN,
             1 => self::MALE,
             2 => self::FEMALE,
             default => self::UNKNOWN,
+        };
+    }
+
+    public function getBadge(): string
+    {
+        return match ($this) {
+            self::UNKNOWN => self::SECONDARY,
+            self::MALE => self::PRIMARY,
+            self::FEMALE => self::SUCCESS,
         };
     }
 }

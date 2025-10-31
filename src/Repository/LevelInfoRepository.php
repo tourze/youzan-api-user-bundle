@@ -4,16 +4,14 @@ namespace YouzanApiUserBundle\Repository;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Tourze\PHPUnitSymfonyKernelTest\Attribute\AsRepository;
 use YouzanApiUserBundle\Entity\LevelInfo;
 
 /**
  * 有赞用户等级信息仓库类
- *
- * @method LevelInfo|null find($id, $lockMode = null, $lockVersion = null)
- * @method LevelInfo|null findOneBy(array $criteria, array $orderBy = null)
- * @method LevelInfo[] findAll()
- * @method LevelInfo[] findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @extends ServiceEntityRepository<LevelInfo>
  */
+#[AsRepository(entityClass: LevelInfo::class)]
 class LevelInfoRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
@@ -23,6 +21,7 @@ class LevelInfoRepository extends ServiceEntityRepository
 
     /**
      * 根据等级ID查询用户等级信息
+     * @return array<LevelInfo>
      */
     public function findByLevelId(int $levelId): array
     {
@@ -31,9 +30,28 @@ class LevelInfoRepository extends ServiceEntityRepository
 
     /**
      * 根据等级名称查询用户等级信息
+     * @return array<LevelInfo>
      */
     public function findByLevelName(string $levelName): array
     {
         return $this->findBy(['levelName' => $levelName]);
+    }
+
+    public function save(LevelInfo $entity, bool $flush = true): void
+    {
+        $this->getEntityManager()->persist($entity);
+
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
+    }
+
+    public function remove(LevelInfo $entity, bool $flush = true): void
+    {
+        $this->getEntityManager()->remove($entity);
+
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
     }
 }

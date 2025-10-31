@@ -4,6 +4,7 @@ namespace YouzanApiUserBundle\Entity;
 
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 use YouzanApiBundle\Entity\Account;
 use YouzanApiUserBundle\Enum\GenderEnum;
@@ -16,79 +17,89 @@ use YouzanApiUserBundle\Repository\UserRepository;
 #[ORM\Table(name: 'ims_youzan_user', options: ['comment' => '有赞用户表'])]
 class User implements \Stringable
 {
+    use TimestampableAware;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: Types::INTEGER, options: ['comment' => 'ID'])]
-    private ?int $id = 0;
+    private int $id = 0;
 
-    public function getId(): ?int
+    public function getId(): int
     {
         return $this->id;
     }
 
     #[ORM\Column(type: Types::STRING, length: 64, unique: true, options: ['comment' => '有赞用户ID'])]
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 64)]
     private string $yzOpenId;
 
     #[ORM\Column(type: Types::STRING, length: 255, nullable: true, options: ['comment' => '昵称（加密）'])]
+    #[Assert\Length(max: 255)]
     private ?string $nickNameEncrypted = null;
 
     #[ORM\Column(type: Types::STRING, length: 255, nullable: true, options: ['comment' => '昵称（明文）'])]
+    #[Assert\Length(max: 255)]
     private ?string $nickNameDecrypted = null;
 
     #[ORM\Column(type: Types::STRING, length: 255, nullable: true, options: ['comment' => '头像'])]
+    #[Assert\Length(max: 255)]
+    #[Assert\Url]
     private ?string $avatar = null;
 
     #[ORM\Column(type: Types::STRING, length: 32, nullable: true, options: ['comment' => '国家'])]
+    #[Assert\Length(max: 32)]
     private ?string $country = null;
 
     #[ORM\Column(type: Types::STRING, length: 32, nullable: true, options: ['comment' => '省份'])]
+    #[Assert\Length(max: 32)]
     private ?string $province = null;
 
     #[ORM\Column(type: Types::STRING, length: 32, nullable: true, options: ['comment' => '城市'])]
+    #[Assert\Length(max: 32)]
     private ?string $city = null;
 
     #[ORM\Column(type: Types::INTEGER, enumType: GenderEnum::class, options: ['comment' => '性别'])]
+    #[Assert\Choice(callback: [GenderEnum::class, 'cases'], message: 'Invalid gender value')]
     private GenderEnum $gender = GenderEnum::UNKNOWN;
 
     #[ORM\Column(type: Types::SMALLINT, options: ['comment' => '平台类型'])]
+    #[Assert\GreaterThanOrEqual(value: 0, message: 'Platform type must be non-negative')]
     private int $platformType = 0;
 
     /**
      * 关联的员工信息
+     * 这些关联已转换为单向关联，不再需要反向端属性
+     * 如需查询，请使用对应的 Repository
      */
-    #[ORM\OneToOne(targetEntity: Staff::class, mappedBy: 'user')]
-    private ?Staff $staff = null;
 
     /**
      * 关联的微信信息
+     * 这些关联已转换为单向关联，不再需要反向端属性
+     * 如需查询，请使用对应的 Repository
      */
-    #[ORM\OneToOne(targetEntity: WechatInfo::class, mappedBy: 'user')]
-    private ?WechatInfo $wechatInfo = null;
 
     /**
      * 关联的手机信息
+     * 这些关联已转换为单向关联，不再需要反向端属性
+     * 如需查询，请使用对应的 Repository
      */
-    #[ORM\OneToOne(targetEntity: MobileInfo::class, mappedBy: 'user')]
-    private ?MobileInfo $mobileInfo = null;
 
     /**
      * 关联的账号
      */
-    #[ORM\ManyToOne(targetEntity: Account::class)]
+    #[ORM\ManyToOne(targetEntity: Account::class, cascade: ['persist'])]
     #[ORM\JoinColumn(name: 'account_id', referencedColumnName: 'id', nullable: false)]
     private Account $account;
-
-    use TimestampableAware;
 
     public function getYzOpenId(): string
     {
         return $this->yzOpenId;
     }
 
-    public function setYzOpenId(string $yzOpenId): self
+    public function setYzOpenId(string $yzOpenId): void
     {
         $this->yzOpenId = $yzOpenId;
-        return $this;
     }
 
     public function getNickNameEncrypted(): ?string
@@ -96,10 +107,9 @@ class User implements \Stringable
         return $this->nickNameEncrypted;
     }
 
-    public function setNickNameEncrypted(?string $nickNameEncrypted): self
+    public function setNickNameEncrypted(?string $nickNameEncrypted): void
     {
         $this->nickNameEncrypted = $nickNameEncrypted;
-        return $this;
     }
 
     public function getNickNameDecrypted(): ?string
@@ -107,10 +117,9 @@ class User implements \Stringable
         return $this->nickNameDecrypted;
     }
 
-    public function setNickNameDecrypted(?string $nickNameDecrypted): self
+    public function setNickNameDecrypted(?string $nickNameDecrypted): void
     {
         $this->nickNameDecrypted = $nickNameDecrypted;
-        return $this;
     }
 
     public function getAvatar(): ?string
@@ -118,10 +127,9 @@ class User implements \Stringable
         return $this->avatar;
     }
 
-    public function setAvatar(?string $avatar): self
+    public function setAvatar(?string $avatar): void
     {
         $this->avatar = $avatar;
-        return $this;
     }
 
     public function getCountry(): ?string
@@ -129,10 +137,9 @@ class User implements \Stringable
         return $this->country;
     }
 
-    public function setCountry(?string $country): self
+    public function setCountry(?string $country): void
     {
         $this->country = $country;
-        return $this;
     }
 
     public function getProvince(): ?string
@@ -140,10 +147,9 @@ class User implements \Stringable
         return $this->province;
     }
 
-    public function setProvince(?string $province): self
+    public function setProvince(?string $province): void
     {
         $this->province = $province;
-        return $this;
     }
 
     public function getCity(): ?string
@@ -151,10 +157,9 @@ class User implements \Stringable
         return $this->city;
     }
 
-    public function setCity(?string $city): self
+    public function setCity(?string $city): void
     {
         $this->city = $city;
-        return $this;
     }
 
     public function getGender(): GenderEnum
@@ -162,10 +167,9 @@ class User implements \Stringable
         return $this->gender;
     }
 
-    public function setGender(GenderEnum $gender): self
+    public function setGender(GenderEnum $gender): void
     {
         $this->gender = $gender;
-        return $this;
     }
 
     public function getPlatformType(): int
@@ -173,55 +177,9 @@ class User implements \Stringable
         return $this->platformType;
     }
 
-    public function setPlatformType(int $platformType): self
+    public function setPlatformType(int $platformType): void
     {
         $this->platformType = $platformType;
-        return $this;
-    }
-
-    public function getStaff(): ?Staff
-    {
-        return $this->staff;
-    }
-
-    public function setStaff(?Staff $staff): self
-    {
-        // 设置关联的双向引用
-        $this->staff = $staff;
-        if ($staff !== null && $staff->getUser() !== $this) {
-            $staff->setUser($this);
-        }
-        return $this;
-    }
-
-    public function getWechatInfo(): ?WechatInfo
-    {
-        return $this->wechatInfo;
-    }
-
-    public function setWechatInfo(?WechatInfo $wechatInfo): self
-    {
-        // 设置关联的双向引用
-        $this->wechatInfo = $wechatInfo;
-        if ($wechatInfo !== null && $wechatInfo->getUser() !== $this) {
-            $wechatInfo->setUser($this);
-        }
-        return $this;
-    }
-
-    public function getMobileInfo(): ?MobileInfo
-    {
-        return $this->mobileInfo;
-    }
-
-    public function setMobileInfo(?MobileInfo $mobileInfo): self
-    {
-        // 设置关联的双向引用
-        $this->mobileInfo = $mobileInfo;
-        if ($mobileInfo !== null && $mobileInfo->getUser() !== $this) {
-            $mobileInfo->setUser($this);
-        }
-        return $this;
     }
 
     public function getAccount(): Account
@@ -229,16 +187,20 @@ class User implements \Stringable
         return $this->account;
     }
 
-    public function setAccount(?Account $account): self
+    public function setAccount(Account $account): void
     {
         $this->account = $account;
-        return $this;
     }
 
     public function __toString(): string
     {
-        return null !== $this->getId() 
-            ? "{$this->getNickNameDecrypted()}[{$this->getYzOpenId()}]" 
-            : '';
+        try {
+            return isset($this->id) && 0 !== $this->id
+                ? "{$this->getNickNameDecrypted()}[{$this->getYzOpenId()}]"
+                : '';
+        } catch (\Error $e) {
+            // 如果属性未初始化，返回空字符串
+            return '';
+        }
     }
 }

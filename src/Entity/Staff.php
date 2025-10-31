@@ -4,6 +4,7 @@ namespace YouzanApiUserBundle\Entity;
 
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 use YouzanApiUserBundle\Repository\StaffRepository;
 
@@ -14,49 +15,54 @@ use YouzanApiUserBundle\Repository\StaffRepository;
 #[ORM\Table(name: 'ims_youzan_user_staff', options: ['comment' => '有赞员工表'])]
 class Staff implements \Stringable
 {
+    use TimestampableAware;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: Types::INTEGER, options: ['comment' => 'ID'])]
-    private ?int $id = 0;
+    private int $id = 0;
 
-    public function getId(): ?int
+    public function getId(): int
     {
         return $this->id;
     }
 
     #[ORM\Column(type: Types::STRING, length: 255, nullable: true, options: ['comment' => '企业名称'])]
+    #[Assert\Length(max: 255)]
     private ?string $corpName = null;
 
     #[ORM\Column(type: Types::BIGINT, nullable: true, options: ['comment' => '微商城店铺ID'])]
+    #[Assert\Positive]
     private ?int $kdtId = null;
 
     #[ORM\Column(type: Types::STRING, length: 64, nullable: true, options: ['comment' => '企业ID'])]
+    #[Assert\Length(max: 64)]
     private ?string $corpId = null;
 
     #[ORM\Column(type: Types::STRING, length: 255, nullable: true, options: ['comment' => '员工邮箱'])]
+    #[Assert\Length(max: 255)]
+    #[Assert\Email]
     private ?string $email = null;
 
     #[ORM\Column(type: Types::STRING, length: 255, nullable: true, options: ['comment' => '员工名称'])]
+    #[Assert\Length(max: 255)]
     private ?string $name = null;
 
     /**
      * 关联的有赞用户
      */
-    #[ORM\OneToOne(targetEntity: User::class, inversedBy: 'staff')]
+    #[ORM\OneToOne(targetEntity: User::class, cascade: ['persist'])]
     #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false)]
     private User $user;
-
-    use TimestampableAware;
 
     public function getCorpName(): ?string
     {
         return $this->corpName;
     }
 
-    public function setCorpName(?string $corpName): self
+    public function setCorpName(?string $corpName): void
     {
         $this->corpName = $corpName;
-        return $this;
     }
 
     public function getKdtId(): ?int
@@ -64,10 +70,9 @@ class Staff implements \Stringable
         return $this->kdtId;
     }
 
-    public function setKdtId(?int $kdtId): self
+    public function setKdtId(?int $kdtId): void
     {
         $this->kdtId = $kdtId;
-        return $this;
     }
 
     public function getCorpId(): ?string
@@ -75,10 +80,9 @@ class Staff implements \Stringable
         return $this->corpId;
     }
 
-    public function setCorpId(?string $corpId): self
+    public function setCorpId(?string $corpId): void
     {
         $this->corpId = $corpId;
-        return $this;
     }
 
     public function getEmail(): ?string
@@ -86,10 +90,9 @@ class Staff implements \Stringable
         return $this->email;
     }
 
-    public function setEmail(?string $email): self
+    public function setEmail(?string $email): void
     {
         $this->email = $email;
-        return $this;
     }
 
     public function getName(): ?string
@@ -97,10 +100,9 @@ class Staff implements \Stringable
         return $this->name;
     }
 
-    public function setName(?string $name): self
+    public function setName(?string $name): void
     {
         $this->name = $name;
-        return $this;
     }
 
     public function getUser(): User
@@ -108,16 +110,15 @@ class Staff implements \Stringable
         return $this->user;
     }
 
-    public function setUser(User $user): self
+    public function setUser(User $user): void
     {
         $this->user = $user;
-        return $this;
     }
 
     public function __toString(): string
     {
-        return null !== $this->getId() 
-            ? "{$this->getName()}[{$this->getEmail()}]" 
-            : '';
+        return null !== $this->getName() && null !== $this->getEmail()
+            ? "{$this->getName()}[{$this->getEmail()}]"
+            : '[]';
     }
 }

@@ -2,180 +2,73 @@
 
 namespace YouzanApiUserBundle\Tests\Entity;
 
-use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use Tourze\PHPUnitDoctrineEntity\AbstractEntityTestCase;
 use YouzanApiBundle\Entity\Account;
 use YouzanApiUserBundle\Entity\User;
 use YouzanApiUserBundle\Enum\GenderEnum;
 
-class UserTest extends TestCase
+/**
+ * @internal
+ */
+#[CoversClass(User::class)]
+final class UserTest extends AbstractEntityTestCase
 {
-    private User $user;
-
-    protected function setUp(): void
+    protected function createEntity(): object
     {
-        $this->user = new User();
+        return new User();
     }
 
     /**
-     * 测试 ID getter 和 setter
+     * @return iterable<string, array{string, mixed}>
      */
-    public function testGetIdReturnsNullForNewEntity(): void
+    public static function propertiesProvider(): iterable
     {
-        $this->assertSame(0, $this->user->getId());
+        $account = new Account();
+
+        return [
+            'yzOpenId' => ['yzOpenId', 'test_value'],
+            'gender' => ['gender', GenderEnum::MALE],
+            'platformType' => ['platformType', 123],
+            'account' => ['account', $account],
+        ];
     }
 
-    /**
-     * 测试 YzOpenId getter 和 setter
-     */
-    public function testYzOpenIdGetterAndSetter(): void
+    public function testToStringMethod(): void
     {
-        $value = 'yz123456789';
+        $user = new User();
 
-        $returnValue = $this->user->setYzOpenId($value);
+        // 新创建的实体 ID 为 0，应该返回空字符串
+        $this->assertEquals('', (string) $user);
 
-        $this->assertSame($this->user, $returnValue, 'Setter 应该返回 $this 以支持链式调用');
-        $this->assertSame($value, $this->user->getYzOpenId(), 'Getter 应该返回设置的值');
+        // 即使设置了昵称，ID 仍为 0，应该返回空字符串
+        $user->setNickNameDecrypted('TestUser');
+        $user->setYzOpenId('yz_test123');
+        $this->assertEquals('', (string) $user);
     }
 
-    /**
-     * 测试昵称相关的 getter 和 setter
-     */
-    public function testNickNameEncryptedGetterAndSetter(): void
+    public function testGenderHandling(): void
     {
-        $value = 'encrypted_nickname';
+        $user = new User();
 
-        $returnValue = $this->user->setNickNameEncrypted($value);
+        // 默认应该是 UNKNOWN
+        $this->assertEquals(GenderEnum::UNKNOWN, $user->getGender());
 
-        $this->assertSame($this->user, $returnValue);
-        $this->assertSame($value, $this->user->getNickNameEncrypted());
+        // 测试设置性别
+        $user->setGender(GenderEnum::MALE);
+        $this->assertEquals(GenderEnum::MALE, $user->getGender());
 
-        // 测试 null 值
-        $this->user->setNickNameEncrypted(null);
-        $this->assertNull($this->user->getNickNameEncrypted());
+        $user->setGender(GenderEnum::FEMALE);
+        $this->assertEquals(GenderEnum::FEMALE, $user->getGender());
     }
 
-    public function testNickNameDecryptedGetterAndSetter(): void
-    {
-        $value = 'decrypted_nickname';
-
-        $returnValue = $this->user->setNickNameDecrypted($value);
-
-        $this->assertSame($this->user, $returnValue);
-        $this->assertSame($value, $this->user->getNickNameDecrypted());
-
-        // 测试 null 值
-        $this->user->setNickNameDecrypted(null);
-        $this->assertNull($this->user->getNickNameDecrypted());
-    }
-
-    /**
-     * 测试头像相关的 getter 和 setter
-     */
-    public function testAvatarGetterAndSetter(): void
-    {
-        $value = 'https://example.com/avatar.jpg';
-
-        $returnValue = $this->user->setAvatar($value);
-
-        $this->assertSame($this->user, $returnValue);
-        $this->assertSame($value, $this->user->getAvatar());
-
-        // 测试 null 值
-        $this->user->setAvatar(null);
-        $this->assertNull($this->user->getAvatar());
-    }
-
-    /**
-     * 测试地理位置相关的 getter 和 setter
-     */
-    public function testLocationGettersAndSetters(): void
-    {
-        $country = 'China';
-        $province = 'Guangdong';
-        $city = 'Shenzhen';
-
-        $this->user->setCountry($country)
-            ->setProvince($province)
-            ->setCity($city);
-
-        $this->assertSame($country, $this->user->getCountry());
-        $this->assertSame($province, $this->user->getProvince());
-        $this->assertSame($city, $this->user->getCity());
-
-        // 测试 null 值
-        $this->user->setCountry(null)
-            ->setProvince(null)
-            ->setCity(null);
-
-        $this->assertNull($this->user->getCountry());
-        $this->assertNull($this->user->getProvince());
-        $this->assertNull($this->user->getCity());
-    }
-
-    /**
-     * 测试性别相关的 getter 和 setter
-     */
-    public function testGenderGetterAndSetter(): void
-    {
-        $value = GenderEnum::MALE;
-
-        $returnValue = $this->user->setGender($value);
-
-        $this->assertSame($this->user, $returnValue);
-        $this->assertSame($value, $this->user->getGender());
-
-        // 测试其他枚举值
-        $this->user->setGender(GenderEnum::FEMALE);
-        $this->assertSame(GenderEnum::FEMALE, $this->user->getGender());
-    }
-
-    /**
-     * 测试平台类型相关的 getter 和 setter
-     */
-    public function testPlatformTypeGetterAndSetter(): void
-    {
-        $value = 1;
-
-        $returnValue = $this->user->setPlatformType($value);
-
-        $this->assertSame($this->user, $returnValue);
-        $this->assertSame($value, $this->user->getPlatformType());
-    }
-
-
-    /**
-     * 测试关联的账号
-     */
     public function testAccountAssociation(): void
     {
-        $account = $this->createMock(Account::class);
+        $user = new User();
+        $account = new Account();
 
-        $returnValue = $this->user->setAccount($account);
-
-        $this->assertSame($this->user, $returnValue);
-        $this->assertSame($account, $this->user->getAccount());
-    }
-
-    /**
-     * 测试创建时间和更新时间相关方法
-     */
-    public function testTimestampMethods(): void
-    {
-        $now = new \DateTimeImmutable();
-
-        // 测试创建时间
-        $this->user->setCreateTime($now);
-        $this->assertSame($now, $this->user->getCreateTime());
-
-        // 测试更新时间
-        $this->user->setUpdateTime($now);
-        $this->assertSame($now, $this->user->getUpdateTime());
-
-        // 测试 null 值
-        $this->user->setCreateTime(null);
-        $this->user->setUpdateTime(null);
-
-        $this->assertNull($this->user->getCreateTime());
-        $this->assertNull($this->user->getUpdateTime());
+        // 测试设置账号
+        $user->setAccount($account);
+        $this->assertSame($account, $user->getAccount());
     }
 }

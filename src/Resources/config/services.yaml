@@ -9,3 +9,8 @@ services:
     resource: '../../Command/'
   YouzanApiUserBundle\Repository\:
     resource: '../../Repository/'
+  YouzanApiUserBundle\Service\:
+    resource: '../../Service/'
+  YouzanApiUserBundle\Controller\:
+    resource: '../../Controller/'
+    tags: ['controller.service_arguments']
