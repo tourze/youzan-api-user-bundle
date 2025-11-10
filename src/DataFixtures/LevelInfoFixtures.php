@@ -5,7 +5,7 @@ namespace YouzanApiUserBundle\DataFixtures;
 use Doctrine\Persistence\ObjectManager;
 use YouzanApiUserBundle\Entity\LevelInfo;
 
-class LevelInfoFixtures extends AppFixtures
+final class LevelInfoFixtures extends AppFixtures
 {
     public const LEVEL_INFO_REFERENCE_PREFIX = 'level_info_';
     public const LEVEL_INFO_COUNT = 10;
