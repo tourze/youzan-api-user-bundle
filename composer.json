@@ -22,7 +22,7 @@
     "tourze/easy-admin-enum-field-bundle": "1.0.*",
     "tourze/easy-admin-menu-bundle": "1.0.*",
     "tourze/enum-extra": "1.0.*",
-    "tourze/youzan-api-bundle": "0.0.*",
+    "tourze/youzan-api-bundle": "0.1.*",
     "youzanyun/open-sdk": "^2.0"
   },
   "require-dev": {
