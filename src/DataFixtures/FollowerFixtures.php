@@ -10,7 +10,7 @@ use YouzanApiUserBundle\Entity\Follower;
 use YouzanApiUserBundle\Entity\LevelInfo;
 use YouzanApiUserBundle\Enum\GenderEnum;
 
-class FollowerFixtures extends AppFixtures implements DependentFixtureInterface
+final class FollowerFixtures extends AppFixtures implements DependentFixtureInterface
 {
     public const FOLLOWER_REFERENCE_PREFIX = 'follower_';
     public const FOLLOWER_COUNT = 30;
